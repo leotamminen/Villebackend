@@ -22,9 +22,11 @@
   "homepage": "https://github.com/eetutaipale/Villebackend#readme",
   "dependencies": {
     "@vercel/node": "^3.2.25",
+    "axios": "^1.7.7",
     "express": "^4.21.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.1",
     "ts-node": "^10.9.2",
