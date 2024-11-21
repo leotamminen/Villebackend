@@ -55,6 +55,21 @@ npm run dev
 
 And go to `localhost:3000/`
 
+### Submitting code with the put-command:
+
+Install dependencies:
+
+```bash
+npm install axios
+npm install --save-dev @types/axios
+```
+
+Run test-file:
+
+```bash
+npx ts-node src/testSubmitCode.ts
+```
+
 ## Navigating the Backend
 
 ### URL Endpoints
