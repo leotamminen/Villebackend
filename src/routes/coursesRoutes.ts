@@ -61,32 +61,35 @@ router.get("/:id/exercises/:exerciseId", (req: Request, res: Response) => {
 });
 
 // PUT route to submit/update code for an exercise
-router.put("/:id/exercises/:exerciseId/submit", (req: Request<Params, any, Body>, res: Response) => {
-  const courseId = parseInt(req.params.id);
-  const exerciseId = parseInt(req.params.exerciseId);
-  const { submittedCode } = req.body;
+router.put(
+  "/:id/exercises/:exerciseId/submit",
+  (req: Request<Params, any, Body>, res: Response) => {
+    const courseId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+    const { submittedCode } = req.body;
 
-  if (!submittedCode) {
-    res.status(400).json({ message: "Submitted code is required" });
-  }
-
-  const courseExercises = exercises[courseId];
-
-  if (courseExercises) {
-    const exercise = courseExercises.find((ex) => ex.id === exerciseId);
-    if (exercise) {
-      exercise.Submitted_code = submittedCode;
-
-      res.status(200).json({
-        message: "Code updated successfully",
-        exercise,
-      });
-    } else {
-      res.status(404).json({ message: "Exercise not found" });
+    if (!submittedCode) {
+      res.status(400).json({ message: "Submitted code is required" });
     }
-  } else {
-    res.status(404).json({ message: "Exercises not found for this course" });
+
+    const courseExercises = exercises[courseId];
+
+    if (courseExercises) {
+      const exercise = courseExercises.find((ex) => ex.id === exerciseId);
+      if (exercise) {
+        exercise.Submitted_code = submittedCode;
+
+        res.status(200).json({
+          message: "Code updated successfully",
+          exercise,
+        });
+      } else {
+        res.status(404).json({ message: "Exercise not found" });
+      }
+    } else {
+      res.status(404).json({ message: "Exercises not found for this course" });
+    }
   }
-});
+);
 
 export default router;
