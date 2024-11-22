@@ -2,11 +2,15 @@ import express, { Request, Response } from "express";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { homePageHTML } from "./homepage";
 import coursesRoutes from "./routes/coursesRoutes";
+import { connectDB } from "./db";
 
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// connect to mongoDB
+connectDB();
 
 // port 3000 for local dev
 if (process.env.NODE_ENV !== "production") {

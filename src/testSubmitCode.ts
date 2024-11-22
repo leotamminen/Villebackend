@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 // The courseId and exerciseId you want to test with
 const courseId = 1; // Replace with your actual course ID
@@ -21,18 +21,21 @@ interface Exercise {
 async function submitCode(): Promise<void> {
   try {
     // Make a PUT request to the backend to submit the code
-    const response = await axios.put(`http://localhost:3000/courses/${courseId}/exercises/${exerciseId}/submit`, {
-      submittedCode: submittedCode,
-    });
+    const response = await axios.put(
+      `http://localhost:3000/courses/${courseId}/exercises/${exerciseId}/submit`,
+      {
+        submittedCode: submittedCode,
+      }
+    );
 
     // Log the response from the server
-    console.log('Response:', response.data);
+    console.log("Response:", response.data);
   } catch (error: any) {
     // Handle errors
     if (error.response) {
-      console.error('Error Response:', error.response.data);
+      console.error("Error Response:", error.response.data);
     } else {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
     }
   }
 }
