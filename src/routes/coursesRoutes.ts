@@ -64,4 +64,36 @@ router.get("/:id/exercises/:exerciseId", async (req: Request, res: Response) => 
   }
 });
 
+// Route to put submissions to specific excercises
+router.put("/:courseId/exercises/:exerciseId/submit", async (req: Request, res: Response) => {
+    const { courseId, exerciseId } = req.params;
+    const { submittedCode } = req.body;
+
+    try {
+      // Find the exercise by courseId and exerciseId
+      const exercise = await Exercise.findOne({ courseId, id: exerciseId });
+
+      // Check if exercise exists, if not return 404
+      if (!exercise) {
+        res.status(404).json({ message: "Exercise not found" });
+        return;
+      }
+
+      // Update submitted code
+      exercise.Submitted_code = submittedCode;
+
+      // Save the updated exercise
+      await exercise.save();
+
+      // Respond with the updated exercise
+      res.status(200).json({
+        message: "Submitted code added successfully.",
+        updatedExercise: exercise,
+      });
+    } catch (error) {
+      console.error("Error updating submitted code:", error);
+      res.status(500).json({ message: "Internal server error", error });
+    }
+  });
+
 export default router;
