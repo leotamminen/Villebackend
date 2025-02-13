@@ -9,10 +9,18 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// connect to mongoDB
-connectDB();
+// Declare a global property for MongoDB connection status
+declare global {
+  var mongoConnected: boolean | undefined;
+}
 
-// port 3000 for local dev
+//  Checks that `connectDB()` is only called once
+if (!globalThis.mongoConnected) {
+  connectDB();
+  globalThis.mongoConnected = true;
+}
+
+// Start the server (only once)
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {

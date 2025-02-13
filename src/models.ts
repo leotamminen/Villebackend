@@ -26,16 +26,18 @@ interface IExercise extends Document {
   programmingLanguage: string;
   Exercise_code: string;
   Submitted_code: string;
+  correctAnswer?: string; // Add correctAnswer (not returned to the user) right now is.
 }
 
 const ExerciseSchema = new Schema<IExercise>({
-  id: { type: Number, required: true },
+  id: { type: Number, required: true, unique: true },
   courseId: { type: Number, required: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
   programmingLanguage: { type: String, required: true },
   Exercise_code: { type: String, required: true },
   Submitted_code: { type: String, default: "" },
+  correctAnswer: { type: String, select: true }, // remember to change to false (later) ((!! Not included in the JSON return))
 });
 
 export const Exercise = mongoose.model<IExercise>(
