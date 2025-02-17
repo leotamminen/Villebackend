@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { homePageHTML } from "./homepage";
 import coursesRoutes from "./routes/coursesRoutes";
+import usersRoutes from "./routes/usersRoutes";
+import solutionsRoutes from "./routes/solutionsRoutes";
 import { connectDB } from "./db";
 
 const app = express();
@@ -27,6 +29,12 @@ app.get("/", (req: Request, res: Response) => {
 
 // Use the courses routes
 app.use("/courses", coursesRoutes);
+
+// Use the users routes
+app.use("/users", usersRoutes);
+
+// Use the solutions routes
+app.use("/solutions", solutionsRoutes);
 
 // Export the handler for Vercel
 export default (req: VercelRequest, res: VercelResponse) => {

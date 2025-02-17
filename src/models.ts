@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 // Course Model
 interface ICourse extends Document {
@@ -43,3 +43,47 @@ export const Exercise = mongoose.model<IExercise>(
   ExerciseSchema,
   "exercises"
 ); // Explicitly map to the "exercises" collection
+
+// User Model
+interface IUser extends Document {
+  _id: Types.ObjectId;
+  username: string;
+  password_hash: string;
+  registered_courses: number[];
+}
+
+const UserSchema = new Schema<IUser>({
+  _id: { type: Schema.Types.ObjectId, required: true },
+  username: { type: String, required: true },
+  password_hash: { type: String, required: true },
+  registered_courses: { type: [Number], default: [] },
+});
+
+export const User = mongoose.model<IUser>(
+  "User",
+  UserSchema,
+  "users"
+);
+
+// Solution Model
+interface ISolutions extends Document {
+  courseId: number;
+  exerciseId: number;
+  userId: Types.ObjectId;
+  _id: Types.ObjectId;
+  solution: string;
+}
+
+const SolutionSchema = new Schema<ISolutions>({
+  courseId: { type: Number, required: true },
+  exerciseId: { type: Number, required: true },
+  userId: { type: Schema.Types.ObjectId, required: true },
+  _id: { type: Schema.Types.ObjectId, required: true },
+  solution: { type: String, required: true },
+});
+
+export const Solution = mongoose.model<ISolutions>(
+  "Solution",
+  SolutionSchema,
+  "solutions"
+);
