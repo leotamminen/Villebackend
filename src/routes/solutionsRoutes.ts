@@ -9,7 +9,7 @@ router.get("/:userId", async (req: Request, res: Response) => {
     const exerciseId = parseInt(req.params.exerciseId);
     const userId = parseInt(req.params.userId);
   try {
-    const solutions = await Solution.findOne({ where: { courseId, id: exerciseId, userId } });
+    const solutions = await Solution.findOne({ where: { courseId, exerciseId, userId } });
     res.json(solutions);
   } catch (error) {
     console.error("Error fetching solutions:", error);
@@ -24,16 +24,23 @@ router.put("/:courseId/:exerciseId/:userId/submit", async (req: Request, res: Re
 
     try {
         // Check if the solution exists
-        let existingSolution = await Solution.findOne({ where: { courseId, exerciseId, userId } });
+        let existingSolution = await Solution.findOne({ where: {
+            courseId: courseId,
+            exerciseId:exerciseId,
+            userId: userId } });
 
-        if (existingSolution) {
+        if (existingSolution != null) {
             // Update existing solution
             existingSolution.solution = solution;
             await existingSolution.save();
             res.json({ message: "Solution updated", solution: existingSolution });
         } else {
             // Create new solution
-            const newSolution = await Solution.create({ courseId, id: exerciseId, userId, solution });
+            const newSolution = await Solution.create({ 
+                courseId: courseId,
+                exerciseId: exerciseId,
+                userId: userId,
+                solution: solution });
             res.json({ message: "Solution created", solution: newSolution });
         }
     } catch (error) {

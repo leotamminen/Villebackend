@@ -70,7 +70,6 @@ interface ISolutions extends Document {
   courseId: number;
   exerciseId: number;
   userId: String;
-  _id: Types.ObjectId;
   solution: string;
 }
 
@@ -78,7 +77,6 @@ const SolutionSchema = new Schema<ISolutions>({
   courseId: { type: Number, required: true },
   exerciseId: { type: Number, required: true },
   userId: { type: String, required: true },
-  _id: { type: Schema.Types.ObjectId, required: true },
   solution: { type: String, required: true },
 });
 
