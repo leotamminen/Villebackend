@@ -69,7 +69,7 @@ export const User = mongoose.model<IUser>(
 interface ISolutions extends Document {
   courseId: number;
   exerciseId: number;
-  userId: Types.ObjectId;
+  userId: String;
   _id: Types.ObjectId;
   solution: string;
 }
@@ -77,7 +77,7 @@ interface ISolutions extends Document {
 const SolutionSchema = new Schema<ISolutions>({
   courseId: { type: Number, required: true },
   exerciseId: { type: Number, required: true },
-  userId: { type: Schema.Types.ObjectId, required: true },
+  userId: { type: String, required: true },
   _id: { type: Schema.Types.ObjectId, required: true },
   solution: { type: String, required: true },
 });
