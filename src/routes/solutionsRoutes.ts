@@ -3,12 +3,20 @@ import { Solution } from "../models";
 
 const router = Router();
 
-// Route to get all solutions by userId
-router.get("/:userId", async (req: Request, res: Response) => {
-    const userId = req.params.userId;
+// Route to get specific solutions
+router.get("/:courseId/:exerciseId/:userId", async (req: Request, res: Response) => {
+    const { courseId, exerciseId, userId } = req.params;
+
   try {
-    const solutions = await Solution.findOne({ userId });
-    res.json(solutions);
+    const solution = await Solution.findOne({
+        courseId: courseId,
+        exerciseId:exerciseId,
+        userId: userId });
+
+    if (solution){
+        res.json(solution?.solution);
+    } else {res.json("No solution")}
+
   } catch (error) {
     console.error("Error fetching solutions:", error);
     res.status(500).json({ message: "Failed to fetch solutions" });
@@ -20,7 +28,6 @@ router.put("/:courseId/:exerciseId/:userId/submit", async (req: Request, res: Re
     const { courseId, exerciseId, userId } = req.params;
     const { solution } = req.body;
     
-
     try {
         // Check if the solution exists
         let existingSolution = await Solution.findOne({
