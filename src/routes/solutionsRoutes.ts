@@ -5,11 +5,9 @@ const router = Router();
 
 // Route to get all solutions by userId
 router.get("/:userId", async (req: Request, res: Response) => {
-    const courseId = parseInt(req.params.id);
-    const exerciseId = parseInt(req.params.exerciseId);
-    const userId = parseInt(req.params.userId);
+    const userId = req.params.userId;
   try {
-    const solutions = await Solution.findOne({ where: { courseId, exerciseId, userId } });
+    const solutions = await Solution.findOne({ userId });
     res.json(solutions);
   } catch (error) {
     console.error("Error fetching solutions:", error);
@@ -21,15 +19,16 @@ router.get("/:userId", async (req: Request, res: Response) => {
 router.put("/:courseId/:exerciseId/:userId/submit", async (req: Request, res: Response) => {
     const { courseId, exerciseId, userId } = req.params;
     const { solution } = req.body;
+    
 
     try {
         // Check if the solution exists
-        let existingSolution = await Solution.findOne({ where: {
+        let existingSolution = await Solution.findOne({
             courseId: courseId,
             exerciseId:exerciseId,
-            userId: userId } });
+            userId: userId });
 
-        if (existingSolution != null) {
+        if (existingSolution) {
             // Update existing solution
             existingSolution.solution = solution;
             await existingSolution.save();
