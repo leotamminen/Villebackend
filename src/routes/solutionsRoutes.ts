@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { Solution } from "../models";
+import { Exercise } from "../models";
 
 const router = Router();
 
@@ -14,8 +15,13 @@ router.get("/:courseId/:exerciseId/:userId", async (req: Request, res: Response)
         userId: userId });
 
     if (solution){
-        res.json(solution?.solution);
-    } else {res.json("No solution")}
+        res.json(solution?.solution); // return user-saved solution
+    } else {
+        const exercise = await Exercise.findOne({
+            courseId: courseId,
+            id: exerciseId
+        })
+        res.json(exercise?.Exercise_code)} // return default exercise_code
 
   } catch (error) {
     console.error("Error fetching solutions:", error);
