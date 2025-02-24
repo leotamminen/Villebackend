@@ -67,6 +67,7 @@ export const User = mongoose.model<IUser>(
 
 // Solution Model
 interface ISolutions extends Document {
+  _id: {type: mongoose.Schema.Types.ObjectId, required: true, auto: true,}
   courseId: number;
   exerciseId: number;
   userId: String;

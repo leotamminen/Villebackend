@@ -11,7 +11,7 @@ router.get("/:courseId/:exerciseId/:userId", async (req: Request, res: Response)
   try {
     const solution = await Solution.findOne({
         courseId: courseId,
-        exerciseId:exerciseId,
+        exerciseId: exerciseId,
         userId: userId });
 
     if (solution){
@@ -36,10 +36,11 @@ router.put("/:courseId/:exerciseId/:userId/submit", async (req: Request, res: Re
     
     try {
         // Check if the solution exists
-        let existingSolution = await Solution.findOne({
-            courseId: courseId,
-            exerciseId:exerciseId,
-            userId: userId });
+        const existingSolution = await Solution.findOne({ 
+            courseId, 
+            exerciseId, 
+            userId 
+        });
 
         if (existingSolution) {
             // Update existing solution
@@ -48,11 +49,13 @@ router.put("/:courseId/:exerciseId/:userId/submit", async (req: Request, res: Re
             res.json({ message: "Solution updated", solution: existingSolution });
         } else {
             // Create new solution
-            const newSolution = await Solution.create({ 
-                courseId: courseId,
-                exerciseId: exerciseId,
-                userId: userId,
-                solution: solution });
+            const newSolution =  new Solution({
+                courseId,
+                exerciseId,
+                userId,
+                solution
+            });
+            await newSolution.save();
             res.json({ message: "Solution created", solution: newSolution });
         }
     } catch (error) {
