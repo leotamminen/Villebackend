@@ -6,14 +6,14 @@
       "use": "@vercel/node"
     },
     {
-      "src": "src/api/*.py",
+      "src": "src/api/embed.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "src/api/$1.py"
+      "dest": "src/api/embed.py"
     },
     {
       "src": "/(.*)",
@@ -21,7 +21,7 @@
     }
   ],
   "functions": {
-    "src/api/*.py": {
+    "src/api/embed.py": {
       "runtime": "python3.9"
     }
   }
