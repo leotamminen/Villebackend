@@ -2,18 +2,26 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/api/embed.py",
+      "src": "src/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "src/api/*.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "src/api/embed.py"
+      "dest": "src/api/$1.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
     }
   ],
   "functions": {
-    "api/*.py": {
+    "src/api/*.py": {
       "runtime": "python3.9"
     }
   }
