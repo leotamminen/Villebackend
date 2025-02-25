@@ -1,12 +1,24 @@
 import axios from "axios";
+import { checkSubmission } from "./check_function";
 
-// The courseId and exerciseId you want to test with
-const courseId = 1; // Replace with your actual course ID
-const exerciseId = 102; // Replace with your actual exercise ID
+/*
+The courseId and exerciseId for testing.
+submittedCode `const x = 10;\\nconsole.log(x);`
+is correct atm for courseId = 1; exerciseId = 102; ...
 
-// The code you want to submit
+For example `const x = 10;\\nconsole.log(x); K`
+gives partial,
+`const x = Incorrect code`
+gives incorrect. etc
+*/
+
+// This can be changed for testing with different exercises
+const courseId = 1;
+const exerciseId = 102;
+
+// This can be changed also
 const submittedCode = `
-console.log("Submitted code");
+const x = 10;\\nconsole.log(x);
 `;
 
 interface Exercise {
@@ -30,6 +42,9 @@ async function submitCode(): Promise<void> {
 
     // Log the response from the server
     console.log("Response:", response.data);
+
+    // Test the submitted code against the correct answer
+    await testCheck(exerciseId, submittedCode);
   } catch (error: any) {
     // Handle errors
     if (error.response) {
@@ -42,3 +57,9 @@ async function submitCode(): Promise<void> {
 
 // Call the function to submit the code
 submitCode();
+
+async function testCheck(exerciseId: number, submittedCode: string) {
+  console.log(`Testing submitted code for exercise ID ${exerciseId}...`);
+  const result = await checkSubmission(exerciseId, submittedCode);
+  console.log("Check result:", result);
+}

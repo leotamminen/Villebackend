@@ -35,7 +35,9 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.get("/:id/exercises", async (req: Request, res: Response) => {
   const courseId = parseInt(req.params.id);
   try {
-    const exercises = await Exercise.find({ courseId }); // Find exercises by courseId
+    const exercises = await Exercise.find({ courseId }).select(
+      "+correctAnswer"
+    );
     if (exercises.length > 0) {
       res.json(exercises);
     } else {
@@ -48,30 +50,41 @@ router.get("/:id/exercises", async (req: Request, res: Response) => {
 });
 
 // Route to get a specific exercise by ID within a course
-router.get("/:id/exercises/:exerciseId", async (req: Request, res: Response) => {
-  const courseId = parseInt(req.params.id);
-  const exerciseId = parseInt(req.params.exerciseId);
-  try {
-    const exercise = await Exercise.findOne({ courseId, id: exerciseId }); // Find exercise by courseId and id
-    if (exercise) {
-      res.json(exercise);
-    } else {
-      res.status(404).json({ message: "Exercise not found" });
+router.get(
+  "/:id/exercises/:exerciseId",
+  async (req: Request, res: Response) => {
+    const courseId = parseInt(req.params.id);
+    const exerciseId = parseInt(req.params.exerciseId);
+    try {
+      const exercise = await Exercise.findOne({
+        courseId,
+        id: exerciseId,
+      }).select("+correctAnswer");
+      if (exercise) {
+        res.json(exercise);
+      } else {
+        res.status(404).json({ message: "Exercise not found" });
+      }
+    } catch (error) {
+      console.error("Error fetching exercise:", error);
+      res.status(500).json({ message: "Failed to fetch exercise" });
     }
-  } catch (error) {
-    console.error("Error fetching exercise:", error);
-    res.status(500).json({ message: "Failed to fetch exercise" });
   }
-});
+);
 
-// Route to put submissions to specific excercises
-router.put("/:courseId/exercises/:exerciseId/submit", async (req: Request, res: Response) => {
+// Route to put submissions to specific exercises
+router.put(
+  "/:courseId/exercises/:exerciseId/submit",
+  async (req: Request, res: Response) => {
     const { courseId, exerciseId } = req.params;
     const { submittedCode } = req.body;
 
     try {
       // Find the exercise by courseId and exerciseId
-      const exercise = await Exercise.findOne({ courseId, id: exerciseId });
+      const exercise = await Exercise.findOne({
+        courseId,
+        id: exerciseId,
+      }).select("+correctAnswer");
 
       // Check if exercise exists, if not return 404
       if (!exercise) {
@@ -94,6 +107,7 @@ router.put("/:courseId/exercises/:exerciseId/submit", async (req: Request, res: 
       console.error("Error updating submitted code:", error);
       res.status(500).json({ message: "Internal server error", error });
     }
-  });
+  }
+);
 
 export default router;
