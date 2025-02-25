@@ -12,7 +12,10 @@
   ],
   "functions": {
     "src/api/embed.py": {
-      "runtime": "python3.9"
+      "runtime": "python@3.9"
+    },
+    "src/index.ts": {
+      "runtime": "nodejs@18.x"
     }
   }
 }
