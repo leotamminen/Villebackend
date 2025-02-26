@@ -8,9 +8,32 @@ dotenv.config();
 
 const router = Router();
 
+// Route to GET specific solutions
+router.get(
+  "/:courseId/:exerciseId/:userId",
+  async (req: Request, res: Response) => {
+    const { courseId, exerciseId, userId } = req.params;
+
+    try {
+      const solution = await Solution.findOne({ courseId, exerciseId, userId });
+
+      if (solution) {
+        res.json(solution?.solution); // Return user-saved solution
+      } else {
+        const exercise = await Exercise.findOne({ courseId, id: exerciseId });
+        res.json(exercise?.Exercise_code); // Return default exercise_code
+      }
+    } catch (error) {
+      console.error("Error fetching solutions:", error);
+      res.status(500).json({ message: "Failed to fetch solutions" });
+    }
+  }
+);
+
+// Route to POST solutions (Uses FastAPI from .env)
 router.post(
   "/:courseId/:exerciseId/:userId/submit",
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response) => {
     const { courseId, exerciseId, userId } = req.params;
     const { solution } = req.body;
 
