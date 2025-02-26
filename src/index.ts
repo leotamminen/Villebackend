@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { homePageHTML } from "./homepage";
 import coursesRoutes from "./routes/coursesRoutes";
 import usersRoutes from "./routes/usersRoutes";
@@ -11,40 +10,30 @@ const app = express();
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Declare a global property for MongoDB connection status
+// Connect to MongoDB (Ensure it's only called once)
 declare global {
   var mongoConnected: boolean | undefined;
 }
 
-//  Checks that `connectDB()` is only called once
 if (!globalThis.mongoConnected) {
   connectDB();
   globalThis.mongoConnected = true;
 }
 
-// Start the server (only once)
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
-}
-
-// Root or the homepage route
+// Root or homepage route
 app.get("/", (req: Request, res: Response) => {
   res.send(homePageHTML);
 });
 
-// Use the courses routes
-app.use("/courses", coursesRoutes);
+app.use("/api/courses", coursesRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/solutions", solutionsRoutes);
 
-// Use the users routes
-app.use("/users", usersRoutes);
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running locally on http://localhost:${PORT}`);
+  });
+}
 
-// Use the solutions routes
-app.use("/solutions", solutionsRoutes);
-
-// Export the handler for Vercel
-export default (req: VercelRequest, res: VercelResponse) => {
-  app(req as any, res as any);
-};
+export default app;
