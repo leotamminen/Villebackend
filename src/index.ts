@@ -25,6 +25,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send(homePageHTML);
 });
 
+app.use("/courses", coursesRoutes);
 app.use("/api/courses", coursesRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/solutions", solutionsRoutes);
