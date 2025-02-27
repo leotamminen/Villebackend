@@ -30,6 +30,12 @@ app.use("/api/courses", coursesRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/solutions", solutionsRoutes);
 
+// Use the users routes
+app.use("/users", usersRoutes);
+
+// Use the solutions routes
+app.use("/solutions", solutionsRoutes);
+
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
