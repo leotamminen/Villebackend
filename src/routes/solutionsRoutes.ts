@@ -30,10 +30,11 @@ router.get(
   }
 );
 
-// Route to POST solutions (Uses FastAPI from .env)
-router.post(
+// Route to PUT solutions (Uses FastAPI from .env)
+// Changed from POST to PUT!
+router.put(
   "/:courseId/:exerciseId/:userId/submit",
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const { courseId, exerciseId, userId } = req.params;
     const { solution } = req.body;
 
@@ -65,33 +66,25 @@ router.post(
 
       const score = apiResponse.data.score; // Get score from FastAPI response
 
-      // Check if the solution already exists
-      let existingSolution = await Solution.findOne({
-        courseId,
-        exerciseId,
-        userId,
-      });
+      // Find and update existing solution (or create if not found)
+      const updatedSolution = await Solution.findOneAndUpdate(
+        { courseId, exerciseId, userId },
+        { solution },
+        { new: true, upsert: true } // upsert ensures a new document is created if it doesn't exist
+      );
 
-      if (existingSolution) {
-        existingSolution.solution = solution;
-        await existingSolution.save();
-      } else {
-        existingSolution = new Solution({
-          courseId,
-          exerciseId,
-          userId,
-          solution,
-        });
-        await existingSolution.save();
+      if (!updatedSolution) {
+        res.status(500).json({ message: "Failed to update solution" });
+        return;
       }
 
-      res.json({
-        message: "Solution submitted successfully",
+      res.status(200).json({
+        message: "Solution updated successfully",
         score,
-        solution: existingSolution,
+        solution: updatedSolution,
       });
     } catch (error: any) {
-      console.error("Error submitting solution:", error);
+      console.error("Error updating solution:", error);
       res.status(500).json({
         message: "Internal server error",
         error: error instanceof Error ? error.message : error,
