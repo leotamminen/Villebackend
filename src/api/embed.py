@@ -1,13 +1,19 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, constr
 from sentence_transformers import SentenceTransformer, util
-from fastapi import FastAPI
-from pydantic import BaseModel
 import os
+from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
+
 
 app = FastAPI()
 
 # Load the model (use an environment variable or default)
-model_name = os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-albert-small-v2")
-model = SentenceTransformer(model_name)
+model = SentenceTransformer(os.getenv("MODEL_NAME", "paraphrase-MiniLM-L6-v2"))
+executor = ThreadPoolExecutor(max_workers=4)
+
+MAX_LENGTH = 5000  # Adjust based on your requirements
 
 class SubmissionRequest(BaseModel):
     user_submission: str
@@ -29,19 +35,39 @@ async def get_example():
         }
     }
 
+class SubmissionRequest(BaseModel):
+    user_submission: str
+    example_solution: str
+
+@lru_cache(maxsize=1000)
+def cached_encode(text: str):
+    return model.encode(text, convert_to_tensor=True)
+
+async def async_encode(text: str):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(executor, cached_encode, text)
+
 @app.post("/api/score")
-async def score_submission_api(request: SubmissionRequest):
-    """API endpoint to score user submissions based on similarity to example solutions."""
-    embedding_1 = model.encode(request.user_submission, convert_to_tensor=True)
-    embedding_2 = model.encode(request.example_solution, convert_to_tensor=True)
-
-    # Compute cosine similarity
-    similarity = util.pytorch_cos_sim(embedding_1, embedding_2).item()
-
-    # Convert similarity to a percentage score
-    score = round(similarity * 10)
-    
-    return {"score": f"{score}/10"}
+async def score_submission(request: SubmissionRequest):
+    if len(request.user_submission) > MAX_LENGTH or len(request.example_solution) > MAX_LENGTH:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Submission or solution exceeds maximum length of {MAX_LENGTH} characters."
+        )
+    try:
+        user_emb, example_emb = await asyncio.gather(
+            async_encode(request.user_submission),
+            async_encode(request.example_solution)
+        )
+        
+        similarity = util.cos_sim(user_emb, example_emb).item()
+        return {"score": f"{round(similarity * 10)}/10"}
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Processing error: {str(e)}"
+        )
 
 # Example usage for local testing (Optional)
 #if __name__ == "__main__":
