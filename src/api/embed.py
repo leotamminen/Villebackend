@@ -6,7 +6,7 @@ import os
 app = FastAPI()
 
 # Load the model (use an environment variable or default)
-model_name = os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-MiniLM-L6-v2")
+model_name = os.getenv("MODEL_NAME", "sentence-transformers/paraphrase-albert-small-v2")
 model = SentenceTransformer(model_name)
 
 class SubmissionRequest(BaseModel):
