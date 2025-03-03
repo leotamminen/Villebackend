@@ -10,7 +10,7 @@ import asyncio
 app = FastAPI()
 
 # Load the model (use an environment variable or default)
-model = SentenceTransformer(os.getenv("MODEL_NAME", "paraphrase-MiniLM-L6-v2"))
+model = SentenceTransformer(os.getenv("MODEL_NAME", "paraphrase-albert-small-v2"))
 executor = ThreadPoolExecutor(max_workers=4)
 
 MAX_LENGTH = 5000  # Adjust based on your requirements
