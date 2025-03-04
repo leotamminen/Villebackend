@@ -91,8 +91,7 @@ router.put(
 
       res.json({
         message: "Solution processed",
-        score: `${score}/10`,
-        description: getScoreDescription(score),
+        score: `${score}/10 - ${getScoreDescription(score)}`, // Merged into one string
       }); // string format
     } catch (error) {
       console.error("Error submitting solution:", error);
