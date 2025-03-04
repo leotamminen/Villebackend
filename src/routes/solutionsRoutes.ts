@@ -5,6 +5,29 @@ import { checkSubmission } from "../check_function";
 
 const router = Router();
 
+// Helper function to give descriptions to every scores 1-10.
+function getScoreDescription(score: number): string {
+  const descriptions: { [key: number]: string[] } = {
+    1: ["Incorrect.", "Not even close.", "Way off!"],
+    2: ["Needs serious work.", "Very poor.", "Barely started."],
+    3: [
+      "Needs improvement.",
+      "Not great, keep trying.",
+      "Lots of room for improvement.",
+    ],
+    4: ["Getting there.", "A small step forward.", "Could be better."],
+    5: ["Halfway there.", "You're making progress.", "Not bad, keep going!"],
+    6: ["Decent effort.", "More than halfway!", "You're getting closer!"],
+    7: ["Good!", "You're doing well!", "Keep up the good work!"],
+    8: ["Very good!", "Almost there!", "Looking solid!"],
+    9: ["Almost perfect!", "Just a small tweak needed!", "So close!"],
+    10: ["Perfect!", "Flawless!", "You nailed it!"],
+  };
+
+  const options = descriptions[score] || ["Unknown score."]; // Default if something breaks
+  return options[Math.floor(Math.random() * options.length)]; // Pick a random phrase
+}
+
 // Route to get specific solutions
 router.get(
   "/:courseId/:exerciseId/:userId",
@@ -66,7 +89,11 @@ router.put(
       const checkResult = await checkSubmission(parseInt(exerciseId), solution);
       const score = checkResult.score; // now 1/10 to 10/10 format
 
-      res.json({ message: "Solution processed", score: score.toString() }); // string format
+      res.json({
+        message: "Solution processed",
+        score: `${score}/10`,
+        description: getScoreDescription(score),
+      }); // string format
     } catch (error) {
       console.error("Error submitting solution:", error);
       res.status(500).json({ message: "Internal server error", error });
