@@ -2,8 +2,6 @@
 logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Runtime data
 pids
@@ -28,63 +26,16 @@ coverage.*
 build/Release
 
 # Dependency directory
-node_modules/
-.npm/
-.pnpm/
+node_modules
+
+# Optional npm cache directory
+.npm
 
 # Optional REPL history
 .node_repl_history
 
-# TypeScript build artifacts
 typings/
-lib/
 lib/*.js
-lib/*.js.map
 test/*.js
 *.map
-
-# Environment variables
 .env
-.env.local
-.env.development
-.env.production
-.env.test
-.env.*.local
-
-# Editor directories
-.vscode/
-.idea/
-*.swp
-*.swo
-*.sublime*
-
-# Python-specific ignores
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.egg-info/
-*.pytest_cache/
-*.mypy_cache/
-.venv/
-venv/
-pip-log.txt
-pip-delete-this-directory.txt
-
-# FastAPI/Uvicorn ignores
-*.db
-*.sqlite3
-
-# Vercel deployment files
-.vercel/
-.vercel/cache/
-
-# Ignore lock files (optional, if using npm or yarn)
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# MacOS & system files
-.DS_Store
-Thumbs.db
-.vercel
