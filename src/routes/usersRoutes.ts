@@ -1,25 +1,36 @@
-import { Router, Request, Response } from "express";
-import { User } from "../models";
+import bcrypt from "bcryptjs";
 
-const router = Router();
+import express, { Request, Response } from "express";
+import {User} from "../models"; // Adjust the path based on your project
 
-// Route to get user data by username, used by current "login"
-router.get("/:username", async (req: Request, res: Response) => {
-    const username = req.params.username;
-  
-    try {
+const router = express.Router();
+
+router.post("/login", async (req: Request, res: Response): Promise<void> => {
+  const { username, password } = req.body;
+
+  try {
       // Find user by username
-      const user = await User.findOne({ username }).select("_id registered_courses");
-  
-      if (user) {
-        res.json({ _id: user._id, registered_courses: user.registered_courses });
-      } else {
-        res.status(404).json({ message: "User not found" });
+      const user = await User.findOne({ username }).select("_id registered_courses password_hash");
+
+      if (!user) {
+          res.status(404).json({ message: "User not found" });
+          return;
       }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+
+      // Compare the provided password with the hashed password from MongoDB
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isMatch) {
+          res.status(401).json({ message: "Invalid credentials" });
+          return;
+      }
+
+      // Send back user data (excluding password)
+      res.json({ _id: user._id, registered_courses: user.registered_courses });
+
+  } catch (error) {
+      console.error("Error during authentication:", error);
+      res.status(500).json({ message: "Server error" });
+  }
+});
 
 export default router;
