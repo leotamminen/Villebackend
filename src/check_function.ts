@@ -2,12 +2,12 @@ import { getExerciseById } from "./db";
 
 /**
  * Checks the submitted code against the correct answer.
- * Returns only the result (correct, incorrect, partial), but never the correct answer.
+ * Returns a numerical score (1-10), but never the correct answer.
  */
 export async function checkSubmission(
   exerciseId: number,
   submittedCode: string
-): Promise<{ exerciseId: number; result: string }> {
+): Promise<{ exerciseId: number; score: number }> {
   try {
     console.log(`🔎 Checking submission for Exercise ID: ${exerciseId}`);
 
@@ -28,23 +28,36 @@ export async function checkSubmission(
 
     console.log(`✅ Retrieved correct answer for Exercise ${exerciseId}`);
 
-    // Compare the submitted code with the correct answer
-    const similarity = compareCode(submittedCode, correctAnswer);
+    // Remove comments from submitted code and correct answer before comparison
+    const cleanedSubmitted = removeComments(submittedCode);
+    const cleanedCorrect = removeComments(correctAnswer);
 
-    let result: string;
-    if (similarity === 1) {
-      result = "correct";
-    } else if (similarity > 0.7) {
-      result = "partial"; // Almost correct
-    } else {
-      result = "incorrect";
-    }
+    // Compare the cleaned submitted code with the correct answer
+    const similarity = compareCode(cleanedSubmitted, cleanedCorrect);
 
-    return { exerciseId, result };
+    // Convert similarity (0 to 1) into a score from 1 to 10
+    const score = Math.max(1, Math.round(similarity * 10));
+
+    return { exerciseId, score };
   } catch (error) {
     console.error("Error in checkSubmission:", error);
-    return { exerciseId, result: "error" };
+    return { exerciseId, score: 1 }; // Return the lowest score on error
   }
+}
+
+/**
+ * Removes comments from the code before comparison.
+ */
+function removeComments(code: string): string {
+  return code
+    .split("\n")
+    .map((line) => {
+      // Remove inline comments
+      let cleanLine = line.split("//")[0].split("#")[0].trim();
+      return cleanLine;
+    })
+    .filter((line) => line !== "") // Remove empty lines
+    .join("\n");
 }
 
 /**

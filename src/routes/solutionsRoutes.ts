@@ -62,11 +62,11 @@ router.put(
         await existingSolution.save();
       }
 
-      // Tarkista vastaus ja laske arvosana
+      // Return the score to frontend as string
       const checkResult = await checkSubmission(parseInt(exerciseId), solution);
-      const score = checkResult.result; // 'correct', 'partial', 'incorrect' jne.
+      const score = checkResult.score; // now 1/10 to 10/10 format
 
-      res.json({ message: "Solution processed", score: score }); // Lähetä arvosana takaisin frontendille
+      res.json({ message: "Solution processed", score: score.toString() }); // string format
     } catch (error) {
       console.error("Error submitting solution:", error);
       res.status(500).json({ message: "Internal server error", error });
